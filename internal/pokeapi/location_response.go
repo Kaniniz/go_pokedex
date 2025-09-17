@@ -1,8 +1,8 @@
 package pokeapi
 
 import (
-	"io"
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
@@ -12,24 +12,31 @@ func (client *Client) ListLocations(pageURL *string) (ResponseLocationsArea, err
 		url = *pageURL
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return ResponseLocationsArea{}, err
-	}
+	data, ok := client.pokeCache.Get(url)
 
-	resp, err := client.httpClient.Do(req)
-	if err != nil {
-		return ResponseLocationsArea{}, err
-	}
-	defer resp.Body.Close()
-	
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ResponseLocationsArea{}, err
+	//If url isn't in the cache, make a http.GET and cache the answer as []byte
+	if !ok {
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			return ResponseLocationsArea{}, err
+		}
+
+		resp, err := client.httpClient.Do(req)
+		if err != nil {
+			return ResponseLocationsArea{}, err
+		}
+		defer resp.Body.Close()
+
+		data, err = io.ReadAll(resp.Body)
+		if err != nil {
+			return ResponseLocationsArea{}, err
+		}
+
+		client.pokeCache.Add(url, data)
 	}
 
 	locationsAreaResponse := ResponseLocationsArea{}
-	err = json.Unmarshal(data, &locationsAreaResponse)
+	err := json.Unmarshal(data, &locationsAreaResponse)
 	if err != nil {
 		return ResponseLocationsArea{}, err
 	}

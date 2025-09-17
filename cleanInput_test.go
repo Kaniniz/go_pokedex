@@ -4,22 +4,22 @@ import (
 	"testing"
 )
 
-func TestCleanInput (t *testing.T) {
+func TestCleanInput(t *testing.T) {
 	cases := []struct {
-		input 		string
-		expected	[]string
+		input    string
+		expected []string
 	}{
 		{
-			input: 		" Hello, World! ",
-			expected: 	[]string{"hello,", "world!"},
+			input:    " Hello, World! ",
+			expected: []string{"hello,", "world!"},
 		},
 		{
-			input: 		"Nothing",
-			expected:	[]string{"nothing"},
+			input:    "Nothing",
+			expected: []string{"nothing"},
 		},
 		{
-			input: 		"",
-			expected:	[]string{""},
+			input:    "",
+			expected: []string{""},
 		},
 	}
 
@@ -31,7 +31,7 @@ func TestCleanInput (t *testing.T) {
 			expectedWord := c.expected[i]
 			if word != expectedWord {
 				t.Errorf("Word = %s, wanted: %s", word, expectedWord)
-
+				return
 			}
 		}
 	}
