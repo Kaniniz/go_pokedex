@@ -14,6 +14,7 @@ type config struct {
 	pokeapiClient    pokeapi.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
+	pokedex			 map[string]pokeapi.PokemonInformation
 }
 
 func main() {
@@ -21,6 +22,7 @@ func main() {
 	pokeClient := pokeapi.NewClient(5 * time.Second, 5*time.Minute)
 	cfg := &config{
 		pokeapiClient: pokeClient,
+		pokedex:	   map[string]pokeapi.PokemonInformation{},
 	}
 
 	response := bufio.NewScanner(os.Stdin)
@@ -97,6 +99,16 @@ func init() {
 			name:		 "catch",
 			description: "Try to catch a pokemon and add them to your pokédex!",
 			callback:	 commandCatch,
+		},
+		"inspect": {
+			name: 		 "inspect",
+			description: "Inspect pokémons in your pokédex!",
+			callback:	 commandInspect,
+		},
+		"pokedex": {
+			name: 		 "pokedex",
+			description: "Lists your pokedex entries",
+			callback:	 commandPokedex,
 		},
 	}
 }
