@@ -34,32 +34,33 @@ func main() {
 
 		//First word in the user input is the command
 		input := cleanText[0]
+		args := []string{}
+		if len(cleanText) > 1 {
+			args = cleanText[1:]
+		}
 		command, exists := allCommands[input]
 		if exists == false {
 			fmt.Println("Unknown command:", input)
 			continue
 		}
 
-		err := command.callback(cfg)
+		err := command.callback(cfg, args...)
 		if err != nil {
 			fmt.Println("Error executing command:", err)
 		}
-
 	}
 }
 
 func cleanInput(text string) []string {
-	text, _ = strings.CutPrefix(text, " ")
-	text, _ = strings.CutSuffix(text, " ")
 	text = strings.ToLower(text)
-	words := strings.Split(text, " ")
+	words := strings.Fields(text)
 	return words
 }
 
 type cliCommands struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 // Declare the allCommands variable but assign the variables later to prevent an initialization cycle
@@ -86,6 +87,16 @@ func init() {
 			name:        "mapb",
 			description: "List the previous 20 locations",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:		 "explore",
+			description: "Lists the pokemons of the specified area. Usage: explore LocationName",
+			callback: 	 commandExplore,
+		},
+		"catch": {
+			name:		 "catch",
+			description: "Try to catch a pokemon and add them to your pokédex!",
+			callback:	 commandCatch,
 		},
 	}
 }
